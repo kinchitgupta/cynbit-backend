@@ -2,9 +2,7 @@
 import logging
 import sqlite3
 from contextlib import asynccontextmanager
-
 from fastapi import Depends, FastAPI
-
 from app.database import get_db, init_db
 from app.errors import AppError, register_exception_handlers
 from app.routes import router
@@ -31,7 +29,6 @@ app = FastAPI(
 
 register_exception_handlers(app)
 app.include_router(router)
-
 
 @app.get("/health", tags=["system"])
 def health(conn: sqlite3.Connection = Depends(get_db)) -> dict:

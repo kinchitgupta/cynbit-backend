@@ -1,4 +1,3 @@
-
 import hashlib
 import json
 import sqlite3
@@ -29,7 +28,6 @@ def _lookup(conn: sqlite3.Connection, key: str, endpoint: str, fp: str) -> dict 
         )
     return json.loads(row["response_body"])
 
-
 def execute_once(
     conn: sqlite3.Connection,
     *,
@@ -43,14 +41,11 @@ def execute_once(
     if key is None:
         with conn:
             return create(conn)
-
     fp = fingerprint(payload)
-
     saved = _lookup(conn, key, endpoint, fp)
     if saved is not None:
         response.headers["Idempotent-Replay"] = "true"
         return saved
-
     try:
         with conn:
             body = create(conn)

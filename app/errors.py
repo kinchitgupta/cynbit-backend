@@ -1,6 +1,4 @@
-
 import logging
-
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -10,7 +8,6 @@ logger = logging.getLogger("cynbit.api")
 
 
 class AppError(Exception):
-
     def __init__(
         self,
         status_code: int,
@@ -24,16 +21,13 @@ class AppError(Exception):
         self.message = message
         self.headers = headers
 
-
 def error_body(code: str, message: str, details: list[dict] | None = None) -> dict:
     body: dict = {"error": {"code": code, "message": message}}
     if details:
         body["error"]["details"] = details
     return body
 
-
 def register_exception_handlers(app: FastAPI) -> None:
-
     @app.exception_handler(AppError)
     async def handle_app_error(_: Request, exc: AppError) -> JSONResponse:
         return JSONResponse(
@@ -41,7 +35,6 @@ def register_exception_handlers(app: FastAPI) -> None:
             content=error_body(exc.code, exc.message),
             headers=exc.headers,
         )
-
     @app.exception_handler(RequestValidationError)
     async def handle_validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
         details = [
@@ -55,7 +48,6 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=422,
             content=error_body("validation_error", "Request validation failed.", details),
         )
-
     @app.exception_handler(StarletteHTTPException)
     async def handle_http_exception(_: Request, exc: StarletteHTTPException) -> JSONResponse:
 

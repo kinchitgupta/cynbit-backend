@@ -11,12 +11,10 @@ def _blank_to_none(value):
         return None
     return value
 
-
 def _validate_person_name(value: str) -> str:
     if not all(ch.isalpha() or ch in " .'-" for ch in value):
         raise ValueError("Name may only contain letters, spaces, dots, apostrophes and hyphens.")
     return value
-
 
 class DomainLab(str, Enum):
 
@@ -27,13 +25,9 @@ class DomainLab(str, Enum):
     qa_automation = "qa_automation"
     uiux_design = "uiux_design"
 
-
-
-
 class InquiryCreate(BaseModel):
 
     model_config = INPUT_CONFIG
-
     full_name: str = Field(min_length=2, max_length=100)
     email: EmailStr  # checks real email syntax (needs the email-validator package)
     company: str | None = Field(default=None, max_length=120)  # optional
@@ -49,6 +43,7 @@ class InquiryCreate(BaseModel):
         return value.lower()
 
 
+
 class InquiryOut(BaseModel):
 
     id: int
@@ -62,7 +57,6 @@ class InquiryOut(BaseModel):
 class EnrollmentCreate(BaseModel):
 
     model_config = INPUT_CONFIG
-
     full_name: str = Field(min_length=2, max_length=100)
     college: str = Field(min_length=2, max_length=150)
     email: EmailStr
@@ -70,7 +64,6 @@ class EnrollmentCreate(BaseModel):
     domain_lab: DomainLab
     referral_code: str | None = Field(default=None, max_length=40)
     goals: str | None = Field(default=None, max_length=1000)
-
     _blank_optionals = field_validator("referral_code", "goals", mode="before")(_blank_to_none)
     _check_name = field_validator("full_name")(_validate_person_name)
 
@@ -86,7 +79,6 @@ class EnrollmentCreate(BaseModel):
         if not re.fullmatch(r"\+?\d{10,13}", cleaned):
             raise ValueError("Enter a valid phone number (10-13 digits, optional leading +).")
         return cleaned
-
 
 class EnrollmentOut(BaseModel):
     id: int

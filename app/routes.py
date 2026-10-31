@@ -1,9 +1,7 @@
 import os
 import secrets
 import sqlite3
-
 from fastapi import APIRouter, Depends, Header, Query, Response
-
 from app.database import get_db
 from app.errors import AppError
 from app.idempotency import execute_once
@@ -12,12 +10,10 @@ from app.schemas import EnrollmentCreate, EnrollmentOut, InquiryCreate, InquiryO
 
 router = APIRouter(prefix="/api/v1")
 
-
 def require_admin(x_admin_key: str | None = Header(default=None)) -> None:
     expected = os.getenv("ADMIN_API_KEY", "dev-admin-key")
     if not x_admin_key or not secrets.compare_digest(x_admin_key.encode(), expected.encode()):
         raise AppError(401, "unauthorized", "A valid X-Admin-Key header is required.")
-
 
 def idempotency_header(
     key: str | None = Header(default=None, alias="Idempotency-Key", min_length=8, max_length=128),
@@ -25,10 +21,8 @@ def idempotency_header(
 
     return key
 
-
 def _row_to_dict(row: sqlite3.Row) -> dict:
     return dict(row)
-
 
 
 @router.post(
@@ -51,7 +45,6 @@ def create_inquiry(
         )
         row = c.execute("SELECT * FROM inquiries WHERE id = ?", (cur.lastrowid,)).fetchone()
         return _row_to_dict(row)
-
     return execute_once(
         conn,
         key=key,
@@ -60,7 +53,6 @@ def create_inquiry(
         create=create,
         response=response,
     )
-
 
 @router.get("/inquiries", response_model=list[InquiryOut], dependencies=[Depends(require_admin)])
 def list_inquiries(
